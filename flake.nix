@@ -17,12 +17,14 @@
       perSystem = { config, self', pkgs, lib, system, ... }:
         let
           cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
-          nonRustDeps = [
-            pkgs.libiconv
+          nonRustDeps = with pkgs; [
+            pkg-config
+            openssl.dev
+            libiconv
           ];
           rust-toolchain = pkgs.symlinkJoin {
             name = "rust-toolchain";
-            paths = [ pkgs.rustc pkgs.cargo pkgs.cargo-watch pkgs.rust-analyzer pkgs.rustPlatform.rustcSrc ];
+            paths = with pkgs; [ rustc cargo cargo-watch rust-analyzer rustPlatform.rustcSrc ];
           };
         in
         {
@@ -34,8 +36,8 @@
             buildInputs = nonRustDeps;
             nativeBuildInputs = with pkgs; [
               rust-toolchain
-              pkgs.pkg-config
-              pkgs.openssl.dev
+              pkg-config
+              openssl.dev
             ];
           };
 
